@@ -6,18 +6,20 @@
 # It is expected that this class would be lunched monthly, without gaps
 
 # A class, that takes directories names in current directory,
-# then it converts each directory name to datetime object,                                                              -
-# then it compares each datetime object with current date,                                                              -
-# and decides if the object needs to be archivated, if yes                                                              -
-# then it creates an archive directory (if it haven't been created yet),                                                -                                     
-# then it creates inside of archive directory a directory corresponding to aggregation time limit (monthly, yearly),    -
-# then it moves all necessary directories (with their content) to the appropriate archive directory                     -
+# 1) then it converts each directory name to datetime object,                                                              
+#       - DONE ( def __get_current_directories() => subdirs_dates )
+# 2) then it compares each datetime object with current date,                                                              
+# and decides if the object needs to be archivated, if yes                                                              
+#       - DONE ( def __get_aggregation_scale(dirs_list) => aggregation_scale )
+# 3) then it creates an archive directory (if it haven't been created yet),                                                
+#    and creates inside of archive directory a directory corresponding to aggregation time limit (monthly, yearly),    
+#       - DONE ( def __archive_directories_creator() )                                    
+# 4) then it moves all necessary directories (with their content) to the appropriate archive directory                     
+#       - TODO
 
 import os
 from datetime import datetime
 from pprint import pprint
-import os.path
-# from os import path # need to check if it is used
 import re
 
 class Aggregator:
@@ -55,7 +57,7 @@ class Aggregator:
                 subdirs_dates.append(dir_name_converter_helper(subdirectory))
 
         return subdirs_dates
-        
+
 
     # Method that compares each datetime object with current date,
     # and prints which aggregation scale it is possible to do (by month or by year)
@@ -98,10 +100,11 @@ class Aggregator:
                 print("Aggregation is not needed today.")
                 aggregation_scale["aggregation_needed"] = False
         
-        # pprint(aggregation_scale)
+        pprint(aggregation_scale)
         return aggregation_scale
     
-    # Helper method, that checks and existence of a directory, and creates the directory if it is absent
+    # Helper method, that checks and existence of a directory, 
+    # and creates the directory if it is absent
     def __dir_checker_creator_helper(self, current_dir, new_dirname):
             if os.path.exists(f"{current_dir}\\{new_dirname}"): # Check existence of directory needed
                 print (f"'{new_dirname}' directory is present.")
@@ -167,32 +170,17 @@ class Aggregator:
     # Method that moves needed directories to needed archive directory
     # TODO: I need to understand how to move folders by python script
     def __move__old_directories_to_archive_directories(self):
-        print(os.getcwd())
+        # print(os.getcwd())
         dir_name = self.__aggregation_scale['month_aggregation_list'][0].strftime(self.__date_format)
         # print(dir_name)
-        print(os.listdir(f"{os.getcwd()}\\{dir_name}"))
-        pass
+        # print(os.listdir(f"{os.getcwd()}\\{dir_name}"))
 
     # Method to run aggregation
     def run_aggregation(self):
         print("Aggregation check started".center(52, '-'))
         list_of_dirs_to_check = self.__get_current_directories()
-        # pprint(list_of_dirs_to_check)
+        pprint(list_of_dirs_to_check)
         self.__aggregation_scale = self.__get_aggregation_scale(list_of_dirs_to_check)
         self.__archive_dir_structure = self.__archive_directories_creator()
         pprint(self.__archive_dir_structure)
-        # self.__move__old_directories_to_archive_directories() # Error
-            # File "C:\Users\akravchenko\OneDrive - Nordstrom\Documents\Development\daily-template\aggregation.py", line 171, in __move__old_directories_to_archive_directories
-            # dir_name = self.__aggregation_scale['month_aggregation_list'][0].strftime(self.__date_format)
-            #         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
-            # IndexError: string index out of range
-        
-    
-# Could be unnecessary
-# class MonthAggregation(Aggregator):
-#     def __init__(self):
-#         super().__init__(self)
-
-# class YearAggregation(Aggregator):
-#     def __init__(self):
-#         super().__init__(self)
+        self.__move__old_directories_to_archive_directories()
