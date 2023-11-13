@@ -1,4 +1,4 @@
-# Python 3
+#! Python 3
 # In this file described features for aggregation of directories:
 # - monthly aggregation
 # - yearly aggregation
@@ -21,6 +21,7 @@ import os
 from datetime import datetime
 from pprint import pprint
 import re
+import shutil
 
 class Aggregator:
     def __init__(self, path=os.getcwd()):
@@ -28,13 +29,7 @@ class Aggregator:
         self.__date_format = "%d-%m-%Y"
         self.__aggregation_scale = {}
         self.__archive_dir_structure = {}
-        
-    def __get_subdirectories(self):
-        rootdir = self.__path
-        for rootdir, dirs, files in os.walk(rootdir):
-            for subdir in dirs:
-                print(os.path.join(rootdir, subdir))
-    
+
     # Method that takes directory names which current directory contains,
     # then it converts each directory name to datetime object,
     # and returns a collection of datetime objects
@@ -50,21 +45,21 @@ class Aggregator:
             print("You do not have permissions to change to {0}".format(self.__path))
         
         subdirectories = os.listdir()
-        def dir_name_converter_helper(dirname):
-            date_format = self.__date_format
-            p = re.compile('\d\d-\d\d-\d\d\d\d')
-            m = p.match(dirname)
-            if m:
-                return datetime.strptime(dirname, date_format)
 
         subdirs_dates = []
         for subdirectory in subdirectories:
             # pprint(f"subdirectory: {subdirectory}")
-            if dir_name_converter_helper(subdirectory):
-                subdirs_dates.append(dir_name_converter_helper(subdirectory))
+            if self.__dir_name_converter_helper(subdirectory):
+                subdirs_dates.append(self.__dir_name_converter_helper(subdirectory))
 
         
         return subdirs_dates
+    def __dir_name_converter_helper(self, dirname):
+        date_format = self.__date_format
+        p = re.compile('\d\d-\d\d-\d\d\d\d')
+        m = p.match(dirname)
+        if m:
+            return datetime.strptime(dirname, date_format)
 
 
     # Method that compares each datetime object with current date,
@@ -176,21 +171,69 @@ class Aggregator:
         return archive_years_moths_dict
     
     # Method that moves needed directories to needed archive directory
-    # TODO: I need to understand how to move folders by python script
     def __move__old_directories_to_archive_directories(self):
-        # print(os.getcwd())
-        dir_name = self.__aggregation_scale['month_aggregation_list'][0].strftime(self.__date_format)
-        # pprint(f"__aggregation_scale: {0}".format(self.__aggregation_scale))
-        print(dir_name)
-        # print(os.listdir(f"{os.getcwd()}\\{dir_name}"))
+        """Moves old directories to the appropriate archive directories."""
+        
+        # Moving directories for the previous years
+        years_to_archive = []
+        for year_to_archive in self.__aggregation_scale["year_aggregation_list"]:
+            years_to_archive.append(year_to_archive.year)
 
-    # Method to run aggregation
+        years_to_archive_deduplicated = list(dict.fromkeys(years_to_archive))
+        for old_year in years_to_archive_deduplicated:
+            for old_directory in self.__aggregation_scale["year_aggregation_list"]:
+                if old_directory.year == old_year:
+                    old_directory_path = os.path.join(
+                        os.getcwd(),
+                        str(f"{'{:02d}'.format(old_directory.day)}-{'{:02d}'.format(old_directory.month)}-{old_year}"),
+                        )
+                    
+                    archive_directory_path = os.path.join(
+                        os.getcwd(),
+                        "archive",
+                        str(old_directory.year),
+                        str(old_directory.month),
+                    )
+
+                    # Additional check if the day directory is already archived
+                    if os.path.exists(archive_directory_path):
+                        if os.path.isdir(os.path.join(
+                            archive_directory_path,
+                            f"{'{:02d}'.format(old_directory.day)}-{'{:02d}'.format(old_directory.month)}-{old_year}"
+                        )):
+                            print(f"The folder for the day {old_directory.date()} is already archived")
+                        else:
+                            shutil.move(old_directory_path, archive_directory_path)
+        
+        # Moving directories for the current year  
+        for old_directory in self.__aggregation_scale["month_aggregation_list"]:
+            old_directory_path = os.path.join(
+                os.getcwd(),
+                str(f"{'{:02d}'.format(old_directory.day)}-{'{:02d}'.format(old_directory.month)}-{old_directory.year}"),
+            )
+            
+            archive_directory_path = os.path.join(
+                os.getcwd(),
+                "archive",
+                str(old_directory.year),
+                str(old_directory.month),
+            )
+            
+            # Additional check if the day directory is already archived
+            if os.path.exists(archive_directory_path):
+                if os.path.isdir(os.path.join(
+                    archive_directory_path,
+                    f"{'{:02d}'.format(old_directory.day)}-{'{:02d}'.format(old_directory.month)}-{old_directory.year}"
+                )):
+                    print(f"The folder for the day {old_directory.date()} is already archived")
+                else:
+                    shutil.move(old_directory_path, archive_directory_path)
+    
+    # Method to run the aggregation
     def run_aggregation(self):
-        # print("Aggregation check started".center(52, '-'))
-        # list_of_dirs_to_check = self.__get_current_directories()
-        # pprint(f'list_of_dirs_to_check: {list_of_dirs_to_check}')
-        # self.__aggregation_scale = self.__get_aggregation_scale(list_of_dirs_to_check)
-        # self.__archive_dir_structure = self.__archive_directories_creator()
-        # pprint(f'self.__archive_dir_structure: {self.__archive_dir_structure}')
-        # self.__move__old_directories_to_archive_directories()
-        self.__get_subdirectories()
+        print("Aggregation check started".center(52, '-'))
+        list_of_dirs_to_check = self.__get_current_directories()
+        pprint(f'list_of_dirs_to_check: {list_of_dirs_to_check}')
+        self.__aggregation_scale = self.__get_aggregation_scale(list_of_dirs_to_check)
+        self.__archive_dir_structure = self.__archive_directories_creator()
+        self.__move__old_directories_to_archive_directories()
