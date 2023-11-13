@@ -28,6 +28,12 @@ class Aggregator:
         self.__date_format = "%d-%m-%Y"
         self.__aggregation_scale = {}
         self.__archive_dir_structure = {}
+        
+    def __get_subdirectories(self):
+        rootdir = self.__path
+        for rootdir, dirs, files in os.walk(rootdir):
+            for subdir in dirs:
+                print(os.path.join(rootdir, subdir))
     
     # Method that takes directory names which current directory contains,
     # then it converts each directory name to datetime object,
@@ -53,9 +59,11 @@ class Aggregator:
 
         subdirs_dates = []
         for subdirectory in subdirectories:
+            # pprint(f"subdirectory: {subdirectory}")
             if dir_name_converter_helper(subdirectory):
                 subdirs_dates.append(dir_name_converter_helper(subdirectory))
 
+        
         return subdirs_dates
 
 
@@ -172,15 +180,17 @@ class Aggregator:
     def __move__old_directories_to_archive_directories(self):
         # print(os.getcwd())
         dir_name = self.__aggregation_scale['month_aggregation_list'][0].strftime(self.__date_format)
-        # print(dir_name)
+        # pprint(f"__aggregation_scale: {0}".format(self.__aggregation_scale))
+        print(dir_name)
         # print(os.listdir(f"{os.getcwd()}\\{dir_name}"))
 
     # Method to run aggregation
     def run_aggregation(self):
-        print("Aggregation check started".center(52, '-'))
-        list_of_dirs_to_check = self.__get_current_directories()
-        pprint(list_of_dirs_to_check)
-        self.__aggregation_scale = self.__get_aggregation_scale(list_of_dirs_to_check)
-        self.__archive_dir_structure = self.__archive_directories_creator()
-        pprint(self.__archive_dir_structure)
-        self.__move__old_directories_to_archive_directories()
+        # print("Aggregation check started".center(52, '-'))
+        # list_of_dirs_to_check = self.__get_current_directories()
+        # pprint(f'list_of_dirs_to_check: {list_of_dirs_to_check}')
+        # self.__aggregation_scale = self.__get_aggregation_scale(list_of_dirs_to_check)
+        # self.__archive_dir_structure = self.__archive_directories_creator()
+        # pprint(f'self.__archive_dir_structure: {self.__archive_dir_structure}')
+        # self.__move__old_directories_to_archive_directories()
+        self.__get_subdirectories()
