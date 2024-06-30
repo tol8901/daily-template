@@ -39,9 +39,8 @@ class Aggregator:
         try:
             os.chdir(self.__path)
             print("Current working directory: {0}".format(os.getcwd()))
-            print(os.getcwd())
-        # except FileNotFoundError:
-        #     print("Directory '{0}' does not exist".format(self.__path))
+        except FileNotFoundError:
+            print("Directory '{0}' does not exist".format(self.__path))
         except NotADirectoryError:
             print("{0} is not a directory".format(self.__path))
         except PermissionError:
