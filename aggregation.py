@@ -9,9 +9,9 @@
 # 1) then it converts each directory name to datetime object,                                                              
 #       - DONE ( def __get_current_directories() => subdirs_dates )
 # 2) then it compares each datetime object with current date,                                                              
-# and decides if the object needs to be archivated, if yes                                                              
+# and decides if the object needs to be archived, if yes
 #       - DONE ( def __get_aggregation_scale(dirs_list) => aggregation_scale )
-# 3) then it creates an archive directory (if it haven't been created yet),                                                
+# 3) then it creates an archive directory (if it hasn't been created yet),
 #    and creates inside of archive directory a directory corresponding to aggregation time limit (monthly, yearly),    
 #       - DONE ( def __archive_directories_creator() )                                    
 # 4) then it moves all necessary directories (with their content) to the appropriate archive directory                     
@@ -25,13 +25,12 @@ import shutil
 import config
 
 class Aggregator:
-    def __init__(self, path=os.getcwd(), current_os='windows'):
+    def __init__(self, path=os.getcwd(), current_os='linux'):
         self.__path = path
         self.__date_format = "%d-%m-%Y"
         self.__aggregation_scale = {}
         self.__archive_dir_structure = {}
         self.__current_os = current_os
-        print(f"Current OS: {self.__current_os}")
 
     # Method that takes directory names which current directory contains,
     # then it converts each directory name to datetime object,
@@ -51,7 +50,6 @@ class Aggregator:
 
         subdirs_dates = []
         for subdirectory in subdirectories:
-            # pprint(f"subdirectory: {subdirectory}")
             if self.__dir_name_converter_helper(subdirectory):
                 subdirs_dates.append(self.__dir_name_converter_helper(subdirectory))
 
@@ -122,7 +120,7 @@ class Aggregator:
                 os.mkdir(needed_path)
                 print(f"Directory '{new_dirname}' created.")
     
-    # Method that checks arhcive directories structure,
+    # Method that checks archive directories structure,
     # and creates an archive directory (if it haven't been created yet),
     # - a directory for archive year
     # - a directory for archive month
@@ -234,7 +232,7 @@ class Aggregator:
     
     # Method to run the aggregation
     def run_aggregation(self):
-        print("Aggregation check started".center(52, '-'))
+        print(" Aggregation check started ".center(90, '-'))
         list_of_dirs_to_check = self.__get_current_directories()
         pprint(f'list_of_dirs_to_check: {list_of_dirs_to_check}')
         self.__aggregation_scale = self.__get_aggregation_scale(list_of_dirs_to_check)

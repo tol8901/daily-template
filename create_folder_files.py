@@ -4,6 +4,7 @@
 import os
 from datetime import date
 
+
 class TodayTemplate:
     def __init__(self, files_content, dest_dir_for_creation = os.getcwd()):
         self.__today = date.today()
@@ -26,9 +27,10 @@ class TodayTemplate:
     def __create_folder(self, destination_dir, new_dir_name):
         final_directory = os.path.join(destination_dir, new_dir_name)
         if not os.path.exists(final_directory):
+            print(f' Creation of the new directory {new_dir_name} and files is started '.center(90, '-'))
             os.makedirs(final_directory)
         else:
-            print(' Directory with this name already exists '.center(50, '!'))
+            print(f' Directory with the name {new_dir_name} already exists '.center(90, '!'))
         
         return final_directory
     
@@ -43,7 +45,7 @@ class TodayTemplate:
             if os.path.exists (directory_path):
                 # create the file
                 if os.path.isfile(file_path) and os.path.exists(file_path):
-                    print(f"A file \'{name_of_file}\' exists already. Creation is skipped.")
+                    print(f"A file \'{name_of_file}\' already exists. Creation is skipped.")
                 else:
                     with open(file_path, "w") as f:
                         for line in lines_of_text_to_file:
