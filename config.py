@@ -35,5 +35,6 @@ def files_content(current_day_name, current_day_name_US):
 
 os_path = {
     "windows": "\\",
-    "linux": "/"
+    "linux": "/",
+    "darwin": "/"
 }
