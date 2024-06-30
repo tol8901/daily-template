@@ -32,3 +32,8 @@ def files_content(current_day_name, current_day_name_US):
                 "\n"
             ],
         }
+
+os_path = {
+    "windows": "\\",
+    "linux": "/"
+}
