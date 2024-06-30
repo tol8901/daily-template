@@ -9,10 +9,15 @@
 import create_folder_files
 import config
 import aggregation
+import platform
 
 
 if __name__ == "__main__":
-    aggregator = aggregation.Aggregator(f'.{config.windows["path"]}.{config.windows["path"]}directories')
+    current_os = platform.system().lower()
+    print(f"Current OS: {current_os}")
+    aggregator = aggregation.Aggregator(f'.{config.os_path[current_os]}.{config.os_path[current_os]}directories', current_os)
     workday_today = create_folder_files.TodayTemplate(config.files_content, 'directories')
     workday_today.run_creation()
     aggregator.run_aggregation()
+    
+    

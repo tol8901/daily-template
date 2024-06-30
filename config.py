@@ -33,6 +33,7 @@ def files_content(current_day_name, current_day_name_US):
             ],
         }
 
-windows = {
-    "path": "\\",
+os_path = {
+    "windows": "\\",
+    "linux": "/"
 }
