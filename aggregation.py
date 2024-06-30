@@ -15,13 +15,14 @@
 #    and creates inside of archive directory a directory corresponding to aggregation time limit (monthly, yearly),    
 #       - DONE ( def __archive_directories_creator() )                                    
 # 4) then it moves all necessary directories (with their content) to the appropriate archive directory                     
-#       - TODO
+#       - DONE
 
 import os
 from datetime import datetime
 from pprint import pprint
 import re
 import shutil
+import config
 
 class Aggregator:
     def __init__(self, path=os.getcwd()):
@@ -109,7 +110,7 @@ class Aggregator:
     # Helper method, that checks and existence of a directory, 
     # and creates the directory if it is absent
     def __dir_checker_creator_helper(self, current_dir, new_dirname):
-            if os.path.exists(f"{current_dir}\\{new_dirname}"): # Check existence of directory needed
+            if os.path.exists(f"{current_dir}{config.windows["path"]}{new_dirname}"): # Check existence of directory needed
                 print (f"'{new_dirname}' directory is present.")
             else: # If needed dir is absent - create it
                 print(f"A '{new_dirname}' directory is absent. Creating it...", end=" ")
@@ -164,7 +165,7 @@ class Aggregator:
         for key in archive_years_moths_dict:
             print(key, '=>', archive_years_moths_dict[key])
             for month in archive_years_moths_dict[key]:
-                self.__dir_checker_creator_helper(f"{os.getcwd()}\\{key}", f"{month}")
+                self.__dir_checker_creator_helper(f"{os.getcwd()}{config.windows["path"]}{key}", f"{month}")
         # Go up to the dir 'directories' 
         os.chdir("..")
 

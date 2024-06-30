@@ -12,7 +12,7 @@ import aggregation
 
 
 if __name__ == "__main__":
-    aggregator = aggregation.Aggregator('.\\.\\directories')
+    aggregator = aggregation.Aggregator(f'.{config.windows["path"]}.{config.windows["path"]}directories')
     workday_today = create_folder_files.TodayTemplate(config.files_content, 'directories')
     workday_today.run_creation()
     aggregator.run_aggregation()
